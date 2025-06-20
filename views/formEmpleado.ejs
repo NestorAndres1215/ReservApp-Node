@@ -1,0 +1,33 @@
+<% layout('layout') %>
+
+    <div class="header">
+        <h1>Don Tito - <%= empleado ? 'Editar' : 'Nuevo' %> Empleado</h1>
+        <p>
+            <%= empleado ? 'Modifique los datos del empleado' : 'Registre un nuevo empleado' %>
+        </p>
+    </div>
+
+    <div class="employee-form form-nuevo">
+        <h2><i class="fas fa-user<%= empleado ? '-edit' : '-plus' %>"></i>
+            <%= empleado ? 'Editar Empleado' : 'Registrar Nuevo Empleado' %>
+        </h2>
+        <form
+            action="<%= empleado ? '/empleados/' + encodeURIComponent(empleado.nombre) + '?_method=PUT' : '/register-empleado' %>"
+            method="POST">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" value="<%= empleado ? empleado.nombre : '' %>" required>
+
+            <label for="email">Correo:</label>
+            <input type="email" name="email" id="email" value="<%= empleado ? empleado.email : '' %>" required>
+
+            <% if (!empleado) { %>
+                <label for="password">Contraseña:</label>
+                <input type="password" name="password" id="password" required>
+                <% } %>
+
+                    <button type="submit" class="action-btn new-btn submit-btn">
+                        <i class="fas fa-save"></i>
+                        <%= empleado ? 'Actualizar' : 'Guardar' %>
+                    </button>
+        </form>
+    </div>

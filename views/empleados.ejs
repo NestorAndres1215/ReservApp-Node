@@ -1,0 +1,110 @@
+<% layout('layout') %>
+
+    <div class="header">
+        <h1>Don Tito - Gestión de Empleados</h1>
+        <p>Administre la lista de empleados del restaurante</p>
+    </div>
+
+    <div class="employee-table">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+            <button class="action-btn new-btn" onclick="addEmployee()">
+                <i class="fas fa-plus"></i> Nuevo
+            </button>
+
+        </div>
+        <h2><i class="fas fa-users"></i> Lista de Empleados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% empleados.forEach(emp=> { %>
+                    <tr>
+                        <td>
+                            <%= emp.nombre %>
+                        </td>
+                        <td>
+                            <%= emp.email %>
+                        </td>
+                        <td>
+                            <button class="action-btn update-btn"
+                                onclick="window.location.href='/empleados/<%= emp.nombre %>/editar'">
+                                <i class="fas fa-edit"></i> Actualizar
+                            </button>
+
+                            <button class="action-btn delete-btn" onclick="eliminarEmpleado('<%= emp.nombre %>')">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+
+                        </td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function addEmployee() {
+            window.location.href = '/empleados/nuevo';
+        }
+
+        function updateEmployee(nombre) {
+            alert(`Actualizando empleado: ${nombre}`);
+            // Replace with actual update logic (e.g., redirect to edit form or open modal)
+        }
+
+        function eliminarEmpleado(nombre) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer",
+                icon: 'warning',
+                background: '#fff',
+                color: '#b91c1c', // texto rojo oscuro
+                iconColor: '#dc2626', // rojo para ícono
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626', // rojo fuerte
+                cancelButtonColor: '#fca5a5',  // rojo claro
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    title: 'swal-title',
+                    popup: 'swal-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/empleados/${nombre}`, {
+                        method: 'DELETE'
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Empleado eliminado',
+                                text: data.mensaje || 'El empleado fue eliminado correctamente',
+                                background: '#fff',
+                                color: '#b91c1c',
+                                iconColor: '#dc2626',
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                            setTimeout(() => location.reload(), 2000);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un problema al eliminar el empleado',
+                                background: '#fff',
+                                color: '#b91c1c',
+                                iconColor: '#dc2626'
+                            });
+                        });
+                }
+            });
+        }
+    </script>

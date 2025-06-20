@@ -10,10 +10,12 @@ const mesaRoutes = require('./routes/mesaRoutes');
 const restauranteRoutes = require('./routes/restauranteRoutes');
 
 const app = express();
-
+const engine = require('ejs-mate');
+app.engine('ejs', engine); // usa ejs-mate
 // Conexión a MongoDB
 connectDB();
-
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());

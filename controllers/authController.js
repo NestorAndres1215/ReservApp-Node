@@ -7,15 +7,19 @@ const JWT_SECRET = 'una_clave_secreta_bien_larga';
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const usuario = await Usuario.findOne({ email });
-  if (!usuario) return res.status(400).send('Usuario no encontrado');
+
+  if (!usuario) {
+    return res.render('login', { error: 'Usuario no encontrado' });
+  }
 
   const validPassword = await bcrypt.compare(password, usuario.password);
-  if (!validPassword) return res.status(400).send('Contraseña incorrecta');
+  if (!validPassword) {
+    return res.render('login', { error: 'Contraseña incorrecta' });
+  }
 
   const token = jwt.sign({ id: usuario._id, rol: usuario.rol }, 'una_clave_secreta_bien_larga');
   res.cookie('token', token, { httpOnly: true });
 
-  // 🔁 Redirigir según el rol
   if (usuario.rol === 'ADMIN') {
     res.redirect('/admin');
   } else if (usuario.rol === 'EMPLEADO') {
@@ -24,7 +28,6 @@ exports.login = async (req, res) => {
     res.status(403).send('Rol no autorizado');
   }
 };
-
 
 exports.register = async (req, res) => {
   console.log(req.body)
